@@ -64,7 +64,7 @@ public struct Money {
 // Job
 //
 public class Job {
-    var title: String
+    let title: String
     var type: JobType
     
     public enum JobType {
@@ -109,6 +109,35 @@ public class Job {
 // Person
 //
 public class Person {
+    let firstName : String
+    let lastName : String
+    let age : Int
+    var job : Job?
+    var spouse : Person?
+    
+    init(firstName: String, lastName: String, age: Int) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.age = age
+    }
+    
+    func toString() -> String{
+        var result = "[Person: firstName:\(self.firstName) lastName:\(self.lastName) age:\(self.age)"
+        if let job = self.job {
+            result += " job:\(job)"
+        } else {
+            result += " job:nil"
+        }
+                
+        if let spouse = self.spouse {
+            result += " spouse:\(spouse.toString())"
+        } else {
+            result += " spouse:nil"
+        }
+                
+        result += "]"
+        return result
+    }
 }
 
 ////////////////////////////////////
