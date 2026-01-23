@@ -98,7 +98,7 @@ public class Job {
     func raise(byPercent: Double) {
         switch self.type {
         case .Salary(let amount):
-            self.type = .Salary(amount + amount * UInt(byPercent))
+            self.type = .Salary(amount + UInt(Double(amount) * byPercent))
         case .Hourly(let amount):
             self.type = .Hourly(amount + (amount * byPercent))
         }
@@ -112,8 +112,20 @@ public class Person {
     let firstName : String
     let lastName : String
     let age : Int
-    var job : Job?
-    var spouse : Person?
+    var job : Job? {
+        didSet {
+            if (age < 16) {
+                self.job = nil
+            }
+        }
+    }
+    var spouse : Person? {
+        didSet {
+            if (age < 18) {
+                self.spouse = nil
+            }
+        }
+    }
     
     init(firstName: String, lastName: String, age: Int) {
         self.firstName = firstName
@@ -144,4 +156,37 @@ public class Person {
 // Family
 //
 public class Family {
+    var members : [Person]
+    
+    init(spouse1: Person, spouse2: Person) {
+        if (spouse1.spouse != nil || spouse2.spouse != nil) {
+            fatalError("One or both persons is already married")
+        }
+        spouse1.spouse = spouse2
+        spouse2.spouse = spouse1
+        self.members = [spouse1, spouse2]
+    }
+    
+    func haveChild(_ child : Person) -> Bool {
+        if (members[0].age <= 21 && members[1].age <= 21) {
+            return false
+        }
+        self.members.append(child)
+        return true
+    }
+    
+    func householdIncome() -> Int {
+        var income = 0
+        for member in members {
+            if let job = member.job {
+                switch job.type {
+                case .Salary(let amount):
+                    income += Int(amount)
+                case .Hourly(let amount):
+                    income += Int(amount * 2000)
+                }
+            }
+        }
+        return income
+    }
 }
